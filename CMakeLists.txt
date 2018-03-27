@@ -63,6 +63,12 @@ set_target_properties(Snap7
   POSITION_INDEPENDENT_CODE ON # -fPIC
   COMPILE_FLAGS "-O3"
   )
+target_compile_definitions(Snap7
+  PUBLIC
+  _WIN32_WINNT=0x0501
+  _WINSOCK_DEPRECATED_NO_WARNINGS
+  _CRT_SECURE_NO_WARNINGS
+  )
 target_include_directories(Snap7
   INTERFACE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/snap7/>
