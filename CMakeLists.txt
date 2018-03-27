@@ -1,3 +1,6 @@
+###############################################################################
+#                                Configuration                                #
+###############################################################################
 cmake_minimum_required(VERSION 3.5)
 project(snap7 VERSION 1.4.2)
 
@@ -14,7 +17,9 @@ set(CMAKE_CXX_STANDARD 14)
 # Find threading library
 find_package(Threads REQUIRED)
 
-# SNAP7 LIBRARY ###############################################################
+###############################################################################
+#                                Snap7 Library                                #
+###############################################################################
 # Private source and headers
 file(GLOB_RECURSE cxx_sources src/*.cpp)
 file(GLOB_RECURSE cxx_headers src/*.h)
@@ -27,23 +32,32 @@ set_target_properties(snap7
   COMPILE_FLAGS "-O3"
   )
 target_include_directories(snap7
+  INTERFACE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/snap7/>
+  $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include/snap7/>
+
   PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/src/core/
   ${CMAKE_CURRENT_SOURCE_DIR}/src/lib/
   ${CMAKE_CURRENT_SOURCE_DIR}/src/sys/
   )
 target_link_libraries(snap7
-  PRIVATE
+  PUBLIC
   ${CMAKE_THREAD_LIBS_INIT}
   # Windows
   $<$<BOOL:${WIN32}>:Ws2_32.lib>
   $<$<BOOL:${WIN32}>:winmm.lib>
   # Linux
-  $<$<AND:$<BOOL:${UNIX}>,$<NOT:$<BOOL:${APPLE}>>>:rt>
+  $<$<AND:$<BOOL:${UNIX}>,$<NOT:$<BOOL:${APPLE}>>>:rt> # Real-time extension
   )
 
 # Install library, create an export target "snap7Config"
-install(TARGETS snap7 EXPORT snap7Config DESTINATION "${SNAP7_LIBRARY_DIR}")
+install(TARGETS snap7 EXPORT snap7Config
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
+  )
 
 # Install public header files
 # Use "DIRECTORY" signature to preserve folder structure
@@ -57,5 +71,8 @@ install(EXPORT snap7Config DESTINATION "${SNAP7_CMAKE_DIR}")
 # This makes the project importable from the build directory without installing
 export(TARGETS snap7 FILE snap7Config.cmake)
 
-
+###############################################################################
+#                                   Examples                                  #
+###############################################################################
+add_subdirectory(examples)
 
