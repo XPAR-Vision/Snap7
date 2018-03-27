@@ -1,3 +1,43 @@
+# Snap7 Communications Library
+Snap7 is a library for communicating with a Siemens S7 PLC. This repository contains a fork of the source code where we replaced the makefiles with a CMake build/install system, so that we can easily find and link with the installed library from other CMake projects.
+
+The library consists of two parts: the actual library `Snap7`, and the wrapper library `Snap7Wrapper`. The originally intended method to link with Snap7 is to link with `libsnap7.so` and then build `snap7.cpp`, which contains the implementation symbols for the C++ class methods, alongside your client code. This is obviously not user friendly, so we compiled the C++ symbols into a separate library that can also be linked with.
+
+To build the library:
+
+```bash
+# Run CMake
+mkdir build
+cd build
+cmake ..
+
+# Build the libraries
+make
+# Optionally, build the examples
+make examples
+
+# Install globally
+sudo make install
+```
+
+To link your client application with the built library:
+
+```cmake
+find_package(Snap7 REQUIRED)
+add_executable(myapp app.cpp app.h) # (for example)
+target_link_libraries(myapp
+  PUBLIC
+  Snap7::Snap7        # Always
+  Snap7::Snap7Wrapper # Only needed if using the c++ wrapper class
+  )
+```
+
+Library and include directories will automatically be set by linking with the Snap7 targets imported by `find_package`.
+
+## Original README.txt
+Here follows the contents of the originally included README.txt.
+
+```
 Snap7 Package 1.4.2 (See History.txt for details)
 
 The files deployed differs only for their compression method, their content is the same.
@@ -31,3 +71,4 @@ As you can see in the online documentation, Snap7 was succesfully built and test
 I'm pretty sure that the libraries deployed can run in other same-class linux boards if they are "standard Linux" based, and very sure that the libraries can be succesfully built in the others using the correct makefile (V6 or V7).
 
 Please report feedback and send the libraries if you do this.
+```
