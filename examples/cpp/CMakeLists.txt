@@ -7,7 +7,7 @@ macro(add_snap7_cpp_example target)
     FOLDER examples
     OUTPUT_NAME ${target}
     )
-  target_link_libraries(example_cpp_${target} Snap7 Snap7Cpp)
+  target_link_libraries(example_cpp_${target} Snap7 Snap7Wrapper)
   add_dependencies(examples example_cpp_${target})
 endmacro()
 

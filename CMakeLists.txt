@@ -83,23 +83,23 @@ target_link_libraries(Snap7
   $<$<AND:$<BOOL:${UNIX}>,$<NOT:$<BOOL:${APPLE}>>>:rt> # Real-time extension
   )
 
-# Snap7 C++ client library ####################################################
+# Snap7 wrapper ###############################################################
 # The c++ library contains the wrapper object over the public plain c interface
-add_library(Snap7Cpp SHARED
+add_library(Snap7Wrapper SHARED
   src/snap7.cpp
   )
-set_target_properties(Snap7Cpp
+set_target_properties(Snap7Wrapper
   PROPERTIES
-  OUTPUT_NAME snap7cpp
+  OUTPUT_NAME snap7wrapper
   POSITION_INDEPENDENT_CODE ON # -fPIC
   COMPILE_FLAGS "-O3"
   )
-target_link_libraries(Snap7Cpp PUBLIC Snap7)
+target_link_libraries(Snap7Wrapper PUBLIC Snap7)
 
 # Install #####################################################################
 # Install libraries; create an export target "Snap7Config" that remembers where
 # we installed them
-install(TARGETS Snap7 Snap7Cpp EXPORT Snap7Config
+install(TARGETS Snap7 Snap7Wrapper EXPORT Snap7Config
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
   RUNTIME DESTINATION bin
@@ -114,7 +114,7 @@ install(EXPORT Snap7Config
   DESTINATION lib/cmake/snap7/)
 
 # This makes the libraries importable from the build directory without installing
-export(TARGETS Snap7 Snap7Cpp FILE Snap7Config.cmake)
+export(TARGETS Snap7 Snap7Wrapper FILE Snap7Config.cmake)
 
 ###############################################################################
 #                                   Examples                                  #
