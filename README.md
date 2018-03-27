@@ -1,5 +1,7 @@
 # Snap7 Communications Library
-Snap7 is a library for communicating with a Siemens S7 PLC. This repository contains a fork of the source code where we replaced the makefiles with a CMake build/install system, so that we can easily find and link with the installed library from other CMake projects.
+[Snap7](http://snap7.sourceforge.net/) is a library for communicating with a Siemens S7 PLC.
+
+This repository contains a fork of the source code where we replaced the makefiles with a CMake build/install system, so that we can easily find and link with the installed library from other CMake projects.
 
 The library consists of two parts: the actual library `Snap7`, and the wrapper library `Snap7Wrapper`. The originally intended method to link with Snap7 is to link with `libsnap7.so` and then build `snap7.cpp`, which contains the implementation symbols for the C++ class methods, alongside your client code. This is obviously not user friendly, so we compiled the C++ symbols into a separate library that can also be linked with.
 
