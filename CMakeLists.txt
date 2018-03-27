@@ -20,18 +20,50 @@ find_package(Threads REQUIRED)
 ###############################################################################
 #                                Snap7 Library                                #
 ###############################################################################
-# Private source and headers
-file(GLOB_RECURSE cxx_sources src/*.cpp)
-file(GLOB_RECURSE cxx_headers src/*.h)
 
-# Build library
-add_library(snap7 SHARED ${cxx_sources} ${cxx_headers})
-set_target_properties(snap7
+# Snap7 base ##################################################################
+# The base library only contains the plain c methods
+add_library(Snap7 SHARED
+  src/core/s7_client.cpp
+  src/core/s7_client.h
+  src/core/s7_firmware.h
+  src/core/s7_isotcp.cpp
+  src/core/s7_isotcp.h
+  src/core/s7_micro_client.cpp
+  src/core/s7_micro_client.h
+  src/core/s7_partner.cpp
+  src/core/s7_partner.h
+  src/core/s7_peer.cpp
+  src/core/s7_peer.h
+  src/core/s7_server.cpp
+  src/core/s7_server.h
+  src/core/s7_text.cpp
+  src/core/s7_text.h
+  src/core/s7_types.h
+
+  src/lib/snap7_libmain.cpp
+  src/lib/snap7_libmain.h
+
+  src/sys/snap_msgsock.cpp
+  src/sys/snap_msgsock.h
+  src/sys/snap_platform.h
+  src/sys/snap_sysutils.cpp
+  src/sys/snap_sysutils.h
+  src/sys/snap_tcpsrvr.cpp
+  src/sys/snap_tcpsrvr.h
+  src/sys/snap_threads.cpp
+  src/sys/snap_threads.h
+  src/sys/sol_threads.h
+  src/sys/unix_threads.h
+  src/sys/win_threads.h
+  )
+set_target_properties(Snap7
   PROPERTIES
+  OUTPUT_NAME snap7 # Output should be libsnap7.so, not capital
   POSITION_INDEPENDENT_CODE ON # -fPIC
   COMPILE_FLAGS "-O3"
   )
-target_include_directories(snap7
+target_include_directories(Snap7
   INTERFACE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/snap7/>
   $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include/snap7/>
@@ -41,7 +73,7 @@ target_include_directories(snap7
   ${CMAKE_CURRENT_SOURCE_DIR}/src/lib/
   ${CMAKE_CURRENT_SOURCE_DIR}/src/sys/
   )
-target_link_libraries(snap7
+target_link_libraries(Snap7
   PUBLIC
   ${CMAKE_THREAD_LIBS_INIT}
   # Windows
@@ -51,25 +83,38 @@ target_link_libraries(snap7
   $<$<AND:$<BOOL:${UNIX}>,$<NOT:$<BOOL:${APPLE}>>>:rt> # Real-time extension
   )
 
-# Install library, create an export target "snap7Config"
-install(TARGETS snap7 EXPORT snap7Config
+# Snap7 C++ client library ####################################################
+# The c++ library contains the wrapper object over the public plain c interface
+add_library(Snap7Cpp SHARED
+  src/snap7.cpp
+  )
+set_target_properties(Snap7Cpp
+  PROPERTIES
+  OUTPUT_NAME snap7cpp
+  POSITION_INDEPENDENT_CODE ON # -fPIC
+  COMPILE_FLAGS "-O3"
+  )
+target_link_libraries(Snap7Cpp PUBLIC Snap7)
+
+# Install #####################################################################
+# Install libraries; create an export target "Snap7Config" that remembers where
+# we installed them
+install(TARGETS Snap7 Snap7Cpp EXPORT Snap7Config
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
   RUNTIME DESTINATION bin
-  INCLUDES DESTINATION include
   )
 
-# Install public header files
-# Use "DIRECTORY" signature to preserve folder structure
-install(DIRECTORY ./include/ DESTINATION "${SNAP7_INCLUDE_DIR}"
-    FILES_MATCHING PATTERN "*.h")
-install(DIRECTORY ./include/ DESTINATION "${SNAP7_INCLUDE_DIR}"
-    FILES_MATCHING PATTERN "*.cpp")
+# Install headers
+install(DIRECTORY include/snap7/ DESTINATION include/snap7/)
 
-install(EXPORT snap7Config DESTINATION "${SNAP7_CMAKE_DIR}")
+# This makes the libraries importable from the install directory
+install(EXPORT Snap7Config
+  NAMESPACE Snap7::
+  DESTINATION lib/cmake/snap7/)
 
-# This makes the project importable from the build directory without installing
-export(TARGETS snap7 FILE snap7Config.cmake)
+# This makes the libraries importable from the build directory without installing
+export(TARGETS Snap7 Snap7Cpp FILE Snap7Config.cmake)
 
 ###############################################################################
 #                                   Examples                                  #
