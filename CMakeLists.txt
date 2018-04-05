@@ -65,9 +65,10 @@ set_target_properties(Snap7
   )
 target_compile_definitions(Snap7
   PUBLIC
-  _WIN32_WINNT=0x0501
-  _WINSOCK_DEPRECATED_NO_WARNINGS
-  _CRT_SECURE_NO_WARNINGS
+  $<$<BOOL:${WIN32}>:_WIN32_WINNT=0x0501>
+  $<$<BOOL:${WIN32}>:WIN32_LEAN_AND_MEAN>
+  $<$<BOOL:${WIN32}>:_WINSOCK_DEPRECATED_NO_WARNINGS>
+  $<$<BOOL:${WIN32}>:_CRT_SECURE_NO_WARNINGS>
   )
 target_include_directories(Snap7
   INTERFACE
