@@ -122,10 +122,14 @@ install(DIRECTORY include/snap7/ DESTINATION include/snap7/)
 # This makes the libraries importable from the install directory
 install(EXPORT Snap7Config
   NAMESPACE Snap7::
-  DESTINATION lib/cmake/snap7/)
+  DESTINATION lib/cmake/snap7/
+  )
 
 # This makes the libraries importable from the build directory without installing
-export(TARGETS Snap7 Snap7Wrapper FILE Snap7Config.cmake)
+export(TARGETS Snap7 Snap7Wrapper
+  NAMESPACE Snap7::
+  FILE Snap7Config.cmake
+  )
 
 ###############################################################################
 #                                   Examples                                  #
