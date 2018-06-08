@@ -23,7 +23,7 @@ find_package(Threads REQUIRED)
 
 # Snap7 base ##################################################################
 # The base library only contains the plain c methods
-add_library(Snap7 SHARED
+add_library(Snap7
   src/core/s7_client.cpp
   src/core/s7_client.h
   src/core/s7_firmware.h
@@ -41,6 +41,7 @@ add_library(Snap7 SHARED
   src/core/s7_text.h
   src/core/s7_types.h
 
+  $<$<BOOL:${WIN32}>:src/lib/snap7.def>
   src/lib/snap7_libmain.cpp
   src/lib/snap7_libmain.h
 
@@ -69,6 +70,9 @@ target_compile_definitions(Snap7
   $<$<BOOL:${WIN32}>:WIN32_LEAN_AND_MEAN>
   $<$<BOOL:${WIN32}>:_WINSOCK_DEPRECATED_NO_WARNINGS>
   $<$<BOOL:${WIN32}>:_CRT_SECURE_NO_WARNINGS>
+
+  PRIVATE
+  $<$<BOOL:${WIN32}>:_USRDLL>
   )
 target_include_directories(Snap7
   INTERFACE
@@ -92,7 +96,7 @@ target_link_libraries(Snap7
 
 # Snap7 wrapper ###############################################################
 # The c++ library contains the wrapper object over the public plain c interface
-add_library(Snap7Wrapper SHARED
+add_library(Snap7Wrapper
   src/snap7.cpp
   )
 set_target_properties(Snap7Wrapper
